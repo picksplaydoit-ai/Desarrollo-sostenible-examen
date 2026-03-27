@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen Departamental - Desarrollo Sustentable</title>
+    <!-- Tailwind CSS para diseño rápido y responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons para iconografía -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .animate-pop {
+            animation: pop 0.4s cubic-bezier(0.26, 0.53, 0.74, 1.48);
+        }
+
+        @keyframes pop {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="text-slate-900 antialiased">
+
+    <div id="app" class="min-h-screen flex flex-col items-center justify-center p-4">
+        
+        <!-- Contenedor Principal -->
+        <div class="w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden flex flex-col relative">
+            
+            <!-- PANTALLA INICIAL -->
+            <div id="screen-welcome" class="p-8 sm:p-12 space-y-8 text-center">
+                <div class="inline-flex p-6 bg-green-100 rounded-[2.5rem] text-green-600 mb-2">
+                    <i data-lucide="leaf" class="w-16 h-16"></i>
+                </div>
+                <div class="space-y-2">
+                    <h1 class="text-4xl font-black text-slate-800 leading-none uppercase tracking-tighter italic">
+                        EXAMEN<br/><span class="text-green-600">SUSTENTABLE</span>
+                    </h1>
+                    <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Evaluación Departamental • 25 Reactivos</p>
+                </div>
+
+                <div class="space-y-4 max-w-sm mx-auto">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300">
+                            <i data-lucide="user" size="20"></i>
+                        </div>
+                        <input
+                            type="text"
+                            id="input-name"
+                            placeholder="Tu Nombre Completo"
+                            class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl py-5 pl-12 pr-4 focus:border-green-500 focus:outline-none transition-all font-bold text-slate-700 placeholder:text-slate-300"
+                        />
+                    </div>
+                    <button
+                        onclick="startQuiz()"
+                        class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-green-200 flex items-center justify-center gap-3 uppercase tracking-widest"
+                    >
+                        Iniciar Evaluación <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+                <p class="text-[10px] text-slate-400 font-medium">Orden aleatorio activado • Resultados al finalizar</p>
+            </div>
+
+            <!-- CUESTIONARIO -->
+            <div id="screen-quiz" class="hidden flex flex-col h-full animate-pop">
+                <div class="bg-slate-50 p-6 flex items-center justify-between border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-green-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+                            <span id="quiz-progress-text">1 / 25</span>
+                        </div>
+                        <span id="display-name" class="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] truncate max-w-[120px]">ALUMNO</span>
+                    </div>
+                    <div class="h-1.5 w-24 bg-slate-200 rounded-full overflow-hidden">
+                        <div id="quiz-progress-bar" class="h-full bg-green-600 transition-all duration-300" style="width: 4%"></div>
+                    </div>
+                </div>
+
+                <div class="p-8 sm:p-12 space-y-8 flex-1 overflow-y-auto">
+                    <h2 id="question-text" class="text-xl sm:text-2xl font-black text-slate-800 leading-tight">
+                        Cargando pregunta...
+                    </h2>
+
+                    <div id="options-container" class="grid gap-3">
+                        <!-- Botones de opciones generados por JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESULTADOS -->
+            <div id="screen-results" class="hidden flex flex-col h-full animate-pop">
+                <div class="bg-slate-900 p-8 sm:p-12 text-center space-y-4">
+                    <div class="inline-block relative">
+                        <div id="result-icon-container" class="p-6 rounded-full border-8 border-white/10 shadow-2xl">
+                            <i data-lucide="trophy" size="60"></i>
+                        </div>
+                    </div>
+                    <h2 class="text-3xl font-black text-white uppercase tracking-tighter italic leading-none">REPORTE FINAL</h2>
+                    <div class="flex flex-col items-center gap-1">
+                        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Alumno</p>
+                        <p id="result-name" class="text-xl font-black text-white px-4 truncate w-full">Nombre</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto pt-4">
+                        <div class="bg-white/5 backdrop-blur-md p-4 rounded-3xl border border-white/10">
+                            <p class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Puntaje</p>
+                            <p id="result-percentage" class="text-3xl font-black text-white leading-none">0%</p>
+                        </div>
+                        <div class="bg-white/5 backdrop-blur-md p-4 rounded-3xl border border-white/10">
+                            <p class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Aciertos</p>
+                            <p id="result-count" class="text-3xl font-black text-white leading-none">0/25</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desglose -->
+                <div id="review-container" class="flex-1 p-6 sm:p-10 space-y-6 overflow-y-auto max-h-[450px] custom-scrollbar bg-white">
+                    <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+                        <i data-lucide="search" class="w-5 h-5 text-slate-400"></i>
+                        <h3 class="text-sm font-black uppercase tracking-widest text-slate-500 italic">Desglose Técnico</h3>
+                    </div>
+                    <div id="review-list" class="space-y-6">
+                        <!-- Items de revisión generados por JS -->
+                    </div>
+                </div>
+
+                <div class="p-6 sm:p-8 bg-slate-50 border-t border-slate-100">
+                    <button onclick="resetQuiz()" class="w-full bg-slate-950 text-white font-black py-5 rounded-2xl transition-all shadow-xl uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-slate-800">
+                        Reiniciar Evaluación <i data-lucide="rotate-ccw"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer fijo -->
+            <footer class="bg-slate-50 py-3 text-center border-t border-slate-100 opacity-20">
+                <p class="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.4em]">GitHub Pages • Departamental v3.0</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const RAW_QUESTIONS = [
+            // 1-10: Propuesta departamental
+            { q: "¿Qué es el desarrollo sostenible?", options: ["El crecimiento económico sin límites", "El uso intensivo de los recursos naturales", "El desarrollo que satisface las necesidades actuales sin comprometer las futuras", "El desarrollo exclusivo de la industria"], a: 2, rationale: "Definición oficial de la Comisión Brundtland: busca el equilibrio entre generaciones." },
+            { q: "¿Cuál de los siguientes es un tipo de desarrollo sostenible?", options: ["Desarrollo industrial sin control ambiental", "Desarrollo económico basado en combustibles fósiles", "Desarrollo social, económico y ambiental equilibrado", "Desarrollo tecnológico sin regulación"], a: 2, rationale: "La sustentabilidad requiere la armonía de los pilares social, económico y ambiental." },
+            { q: "¿Cuál es un ejemplo de sostenibilidad en la naturaleza?", options: ["La tala excesiva de bosques", "La contaminación de ríos", "El reciclaje natural de nutrientes en los ecosistemas", "El uso indiscriminado de pesticidas"], a: 2, rationale: "La naturaleza opera en ciclos cerrados donde los desechos son insumos para otros procesos." },
+            { q: "¿Qué busca la visión de la sustentabilidad humana?", options: ["Aumentar la producción sin límites", "Priorizar solo el crecimiento económico", "Mejorar la calidad de vida respetando el medio ambiente", "Explotar al máximo los recursos naturales"], a: 2, rationale: "Busca el bienestar humano condicionado a la salud y límites de la biósfera." },
+            { q: "¿Qué relación existe entre desarrollo económico y degradación ecológica?", options: ["No tienen relación alguna", "El desarrollo económico siempre protege la naturaleza", "Un desarrollo mal planeado puede causar degradación ecológica", "La degradación ecológica solo ocurre en países pobres"], a: 2, rationale: "El modelo económico lineal ignora a menudo las externalidades ambientales negativas." },
+            { q: "Desde el punto de vista químico, ¿qué afecta más al medio ambiente?", options: ["El ciclo natural del agua", "La fotosíntesis", "La liberación de contaminantes químicos al aire y al agua", "La formación de suelos"], a: 2, rationale: "Sustancias sintéticas, tóxicos y metales alteran los procesos químicos naturales del entorno." },
+            { q: "¿Cuál es el enfoque biológico de la sustentabilidad?", options: ["El aumento de fábricas", "El uso de fertilizantes artificiales", "La conservación de la biodiversidad", "La expansión urbana sin control"], a: 2, rationale: "La biodiversidad es la base de la resiliencia y salud de los ecosistemas mundiales." },
+            { q: "Desde el punto de vista ecológico, ¿qué es un ecosistema sostenible?", options: ["El que produce más residuos", "El que depende totalmente del ser humano", "El que mantiene el equilibrio entre los seres vivos y su entorno", "El que elimina especies para crecer"], a: 2, rationale: "Un ecosistema saludable es capaz de autorregularse y persistir sin ayuda externa." },
+            { q: "¿Qué provoca la degradación ecológica?", options: ["El uso responsable de recursos", "La educación ambiental", "La sobreexplotación de los recursos naturales", "La protección de áreas naturales"], a: 2, rationale: "Extraer recursos por encima de su capacidad de regeneración natural agota el capital del planeta." },
+            { q: "¿Cómo contribuye la química, biología y ecología al desarrollo sostenible?", options: ["Aumentando el consumo de recursos", "Ignorando los efectos ambientales", "Analizando y reduciendo el impacto ambiental de las actividades humanas", "Eliminando las leyes ambientales"], a: 2, rationale: "Estas ciencias permiten cuantificar el daño y diseñar procesos industriales de menor impacto." },
+            // 11-16: Teoría Integral de Recursos No Renovables (Entropía, Hubbert, EROEI)
+            { q: "¿Qué representan los recursos no renovables desde la perspectiva de la termodinámica?", options: ["Alta entropía (desorden)", "Baja entropía (energía concentrada y ordenada)", "Energía inagotable", "Equilibrio térmico perfecto"], a: 1, rationale: "Son depósitos de energía concentrada que, al usarse, se transforman en calor disperso (alta entropía)." },
+            { q: "¿Qué postula el concepto del 'Pico de Hubbert'?", options: ["Que los recursos nunca se acaban", "Que la producción sigue una curva de campana con una declinación inevitable", "Que el precio del petróleo siempre baja", "Que la tecnología crea petróleo"], a: 1, rationale: "Describe matemáticamente el agotamiento físico de los recursos tras un máximo de producción." },
+            { q: "¿Qué indica una disminución en el EROEI (Tasa de Retorno Energético)?", options: ["Energía más fácil de obtener", "Un sistema energéticamente más caro y difícil de mantener", "Mayor abundancia de petróleo", "Menor costo de extracción"], a: 1, rationale: "Significa que gastamos casi tanta energía en extraer el recurso como la que el recurso nos entrega." },
+            { q: "¿Cuál es el foco de la transición energética del Siglo XXI según la teoría de recursos?", options: ["Carbón mineral", "Gas natural licuado", "Minerales tecnológicos (litio, cobalto, cobre)", "Leña y biomasa"], a: 2, rationale: "La infraestructura verde depende críticamente de metales específicos para baterías y circuitos." },
+            { q: "¿Por qué se dice que los combustibles fósiles son de 'un solo uso'?", options: ["Por leyes políticas", "Porque pasan de baja entropía a formas de alta entropía (calor y gases dispersos)", "Porque son infinitos", "Porque el plástico no se rompe"], a: 1, rationale: "La energía concentrada se libera y dispersa, volviéndose inútil para el mismo proceso físico." },
+            { q: "Según los datos globales, ¿qué porcentaje de la economía mundial es circular actualmente?", options: ["Más del 50%", "Menos del 9%", "Exactamente el 21%", "Cerca del 95%"], a: 1, rationale: "Esto significa que más del 91% de los recursos extraídos terminan como desperdicio tras un solo ciclo." },
+            // 17-25: IMECAS, Agua, Ecosistemas y Circularidad
+            { q: "¿Qué significan las siglas IMECA en el monitoreo ambiental?", options: ["Índice Mensual de Energía", "Índice Metropolitano de la Calidad del Aire", "Indicador Maestro de Ecología", "Índice de Materia Común"], a: 1, rationale: "Es el valor de referencia en México para comunicar el estado del aire y sus riesgos a la salud." },
+            { q: "¿Qué es la eutrofización en los cuerpos de agua?", options: ["Purificación natural", "Enriquecimiento excesivo de nutrientes que agota el oxígeno", "Congelamiento de lagos", "Aumento de salinidad"], a: 1, rationale: "Fertilizantes y detergentes causan crecimiento de algas que asfixian la vida acuática." },
+            { q: "¿Cuál es el pilar fundamental de la Economía Circular?", options: ["Maximizar el volumen de ventas", "Cerrar los ciclos de vida de los productos y materiales", "Enterrar basura de forma eficiente", "Aumentar el uso de plásticos"], a: 1, rationale: "Busca que los materiales se mantengan en uso infinito, eliminando el concepto de residuo." },
+            { q: "¿Qué es un metal pesado persistente y bioacumulable en el agua?", options: ["Calcio", "Magnesio", "Mercurio", "Sodio"], a: 2, rationale: "El mercurio no se degrada y aumenta su concentración al subir en la cadena alimenticia." },
+            { q: "¿Qué es la 'Capacidad de Carga' de un ecosistema?", options: ["El peso de la biomasa animal", "El límite de población o uso que un sistema puede soportar sin colapsar", "La capacidad de las baterías solares", "El volumen de agua en ríos"], a: 1, rationale: "Es el umbral máximo de explotación antes de causar daño irreversible al ecosistema." },
+            { q: "¿A qué se refiere el código CRETIB en la identificación de residuos?", options: ["Costo de Recolección", "Características de peligrosidad (Corrosivo, Reactivo, Explosivo, Tóxico, Inflamable, Biológico)", "Control de Residuos", "Certificación de Reciclaje"], a: 1, rationale: "Es la norma para clasificar residuos peligrosos por sus riesgos químicos intrínsecos." },
+            { q: "¿Qué causa principalmente la lluvia ácida?", options: ["Exceso de CO2", "Vapor de agua", "Óxidos de azufre y nitrógeno", "Oxígeno puro"], a: 2, rationale: "Estos gases industriales reaccionan con la humedad formando ácidos nítrico y sulfúrico." },
+            { q: "¿Qué son los Servicios Ecosistémicos?", options: ["El recibo de agua potable", "Beneficios gratuitos de la naturaleza (polinización, purificación de aire)", "Servicio de limpieza urbana", "Mantenimiento de fábricas"], a: 1, rationale: "Son procesos naturales que sustentan la economía y la vida de forma gratuita y natural." },
+            { q: "¿Qué es la obsolescencia programada?", options: ["Mejora continua de productos", "Diseñar productos para que fallen tras cierto tiempo y forzar el consumo", "Reciclaje de dispositivos", "Uso de software libre"], a: 1, rationale: "Es una estrategia comercial lineal que genera una inmensa cantidad de residuos electrónicos." }
+        ];
+
+        // --- ESTADO ---
+        let questions = [];
+        let currentIndex = 0;
+        let userAnswers = [];
+        let userName = "";
+
+        // --- FUNCIONES LÓGICAS ---
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startQuiz() {
+            const nameInput = document.getElementById('input-name');
+            userName = nameInput.value.trim();
+            if (userName.length < 3) {
+                alert("Por favor, ingresa tu nombre completo.");
+                return;
+            }
+
+            // Mezclar preguntas
+            questions = shuffle([...RAW_QUESTIONS]);
+            currentIndex = 0;
+            userAnswers = [];
+
+            // UI
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            document.getElementById('display-name').innerText = userName;
+            
+            showQuestion();
+            lucide.createIcons();
+        }
+
+        function showQuestion() {
+            const q = questions[currentIndex];
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('quiz-progress-text').innerText = `${currentIndex + 1} / 25`;
+            document.getElementById('quiz-progress-bar').style.width = `${((currentIndex + 1) / 25) * 100}%`;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = "";
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-5 rounded-2xl border-2 border-slate-100 bg-white hover:border-green-500 hover:bg-green-50 transition-all font-bold text-sm sm:text-base text-slate-700 shadow-sm active:scale-95 flex items-center gap-4 group";
+                btn.onclick = () => handleAnswer(idx);
+                btn.innerHTML = `
+                    <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 font-black group-hover:bg-green-600 group-hover:text-white transition-colors">
+                        ${String.fromCharCode(65 + idx)}
+                    </span>
+                    <span class="flex-1">${opt}</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(idx) {
+            userAnswers.push(idx);
+            if (currentIndex < 24) {
+                currentIndex++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-results').classList.remove('hidden');
+
+            const score = userAnswers.reduce((acc, ans, idx) => {
+                return ans === questions[idx].a ? acc + 1 : acc;
+            }, 0);
+            const percentage = (score / 25) * 100;
+
+            document.getElementById('result-name').innerText = userName;
+            document.getElementById('result-percentage').innerText = `${percentage.toFixed(0)}%`;
+            document.getElementById('result-count').innerText = `${score}/25`;
+
+            // Color del icono según calificación
+            const iconCont = document.getElementById('result-icon-container');
+            if (percentage >= 70) {
+                iconCont.className = "p-6 rounded-full border-8 border-white/10 shadow-2xl text-green-400";
+            } else {
+                iconCont.className = "p-6 rounded-full border-8 border-white/10 shadow-2xl text-orange-400";
+            }
+
+            // Generar Desglose
+            const list = document.getElementById('review-list');
+            list.innerHTML = "";
+
+            questions.forEach((q, idx) => {
+                const userAns = userAnswers[idx];
+                const isCorrect = userAns === q.a;
+                
+                const item = document.createElement('div');
+                item.className = `p-5 rounded-3xl border-2 transition-all ${isCorrect ? 'border-green-100 bg-green-50/20' : 'border-red-100 bg-red-50/20'}`;
+                
+                item.innerHTML = `
+                    <div class="flex items-start gap-4 mb-3">
+                        <div class="mt-1 shrink-0">
+                            <i data-lucide="${isCorrect ? 'check-circle-2' : 'x-circle'}" class="${isCorrect ? 'text-green-500' : 'text-red-500'}" size="22"></i>
+                        </div>
+                        <p class="text-sm font-bold text-slate-800 leading-tight">${q.q}</p>
+                    </div>
+                    <div class="ml-9 space-y-3">
+                        <div class="grid grid-cols-1 gap-2 text-[11px] font-bold uppercase tracking-wider">
+                            <div class="${isCorrect ? 'text-green-600' : 'text-red-600'}">Tu respuesta: ${q.options[userAns]}</div>
+                            ${!isCorrect ? `<div class="text-green-600">Respuesta Correcta: ${q.options[q.a]}</div>` : ''}
+                        </div>
+                        <div class="bg-white/60 p-3 rounded-2xl border border-slate-200">
+                            <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1 flex items-center gap-1 leading-none">Retroalimentación</p>
+                            <p class="text-[11px] text-slate-600 italic leading-relaxed">${q.rationale}</p>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+
+            lucide.createIcons();
+        }
+
+        function resetQuiz() {
+            document.getElementById('screen-results').classList.add('hidden');
+            document.getElementById('screen-welcome').classList.remove('hidden');
+            document.getElementById('input-name').value = "";
+            lucide.createIcons();
+        }
+
+        // Inicializar iconos
+        window.onload = () => lucide.createIcons();
+    </script>
+</body>
+</html>
+
